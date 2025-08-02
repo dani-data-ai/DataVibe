@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Dict, Any
-from app.services.llm_mock import MockLLMService
+from app.services.llm_service import llm_service
 from app.services.database_cloud import CloudDatabaseService
+from app.services.audit_service import audit_service
 from app.api.sessions import get_user_session
 from app.middleware.auth import get_current_user
 import uuid
@@ -52,8 +53,8 @@ async def preview_natural_language_query(
         schema_result = CloudDatabaseService.get_schema_info(connection_string)
         schema_info = schema_result if schema_result["success"] else None
         
-        # Generate SQL using mock LLM
-        llm_result = MockLLMService.natural_language_to_sql(
+        # Generate SQL using real LLM service
+        llm_result = await llm_service.natural_language_to_sql(
             request.prompt, 
             schema_info
         )
@@ -70,6 +71,15 @@ async def preview_natural_language_query(
             "session_id": request.session_id,
             "user_id": user_id
         }
+        
+        # Log audit event
+        audit_service.log_query_preview(
+            user_id=user_id,
+            session_id=request.session_id,
+            natural_language=request.prompt,
+            generated_sql=llm_result["sql"],
+            confidence=llm_result["confidence"]
+        )
         
         return QueryPreviewResponse(
             query_id=query_id,
@@ -121,13 +131,13 @@ async def execute_query(
         original_prompt = cached_query["prompt"]
         
         # Generate explanations and suggestions
-        explanation = MockLLMService.explain_results(
+        explanation = await llm_service.explain_results(
             result["data"], 
             request.sql_query, 
             original_prompt
         )
         
-        suggestions = MockLLMService.suggest_followup_questions(
+        suggestions = await llm_service.suggest_followup_questions(
             result["data"], 
             original_prompt
         )

@@ -153,3 +153,53 @@ class CloudDatabaseService:
                 "tables": [],
                 "message": f"Schema query failed: {str(e)}"
             }
+    
+    @staticmethod
+    def execute_ddl_query(connection_string: str, ddl_query: str) -> Dict[str, Any]:
+        """Execute DDL query (CREATE, ALTER, etc.) on remote database"""
+        try:
+            # Validate it's a safe DDL query
+            sql_clean = ddl_query.strip().upper()
+            allowed_ddl = ['CREATE TABLE', 'ALTER TABLE', 'CREATE INDEX', 'CREATE VIEW']
+            
+            is_allowed = False
+            for ddl in allowed_ddl:
+                if sql_clean.startswith(ddl):
+                    is_allowed = True
+                    break
+            
+            if not is_allowed:
+                raise ValueError("Only safe DDL operations are allowed (CREATE TABLE, ALTER TABLE ADD COLUMN, CREATE INDEX, CREATE VIEW)")
+            
+            # Block dangerous operations
+            dangerous_keywords = ['DELETE', 'UPDATE', 'INSERT', 'DROP', 'TRUNCATE']
+            for keyword in dangerous_keywords:
+                if keyword in sql_clean and 'DROP COLUMN' not in sql_clean:
+                    raise ValueError(f"Query contains prohibited keyword: {keyword}")
+            
+            CloudDatabaseService.validate_connection_string(connection_string)
+            
+            engine = create_engine(connection_string, connect_args={"connect_timeout": 10})
+            
+            with engine.connect() as conn:
+                # Begin transaction for DDL
+                trans = conn.begin()
+                try:
+                    conn.execute(text(ddl_query))
+                    trans.commit()
+                except Exception as e:
+                    trans.rollback()
+                    raise e
+                
+            return {
+                "success": True,
+                "message": "DDL query executed successfully",
+                "query": ddl_query
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"DDL query failed: {str(e)}",
+                "query": ddl_query
+            }
