@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Mail, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react'
 
 interface PasswordResetFormProps {
   onSuccess?: () => void
@@ -37,51 +40,69 @@ export default function PasswordResetForm({ onSuccess, onBack }: PasswordResetFo
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
-      {message && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          {message}
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{error}</span>
         </div>
       )}
       
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email Address
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-          required
-          disabled={loading}
-          placeholder="Enter your email address"
-        />
+      {message && (
+        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{message}</span>
+        </div>
+      )}
+
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Reset Your Password</h3>
+        <p className="text-sm text-muted-foreground">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
       </div>
       
-      <button
-        type="submit"
-        disabled={loading || !email}
-        className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Sending...' : 'Send Reset Email'}
-      </button>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-semibold text-foreground">
+            Email Address
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+            <Input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              className="pl-11"
+              placeholder="Enter your email"
+              required
+              disabled={loading}
+            />
+          </div>
+        </div>
+        
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white hover:shadow-colored"
+          size="lg"
+        >
+          {loading ? 'Sending...' : 'Send Reset Link'}
+        </Button>
+      </form>
       
       <div className="text-center">
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={onBack}
-          className="text-sm text-gray-600 hover:text-gray-800 underline"
+          className="gap-2 text-muted-foreground hover:text-primary"
         >
+          <ArrowLeft className="w-4 h-4" />
           Back to Sign In
-        </button>
+        </Button>
       </div>
-    </form>
+    </div>
   )
 }

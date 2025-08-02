@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { AlertCircle, Mail, Lock, CheckCircle } from 'lucide-react'
 
 interface SignUpFormProps {
   onSuccess?: () => void
@@ -51,80 +54,112 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{error}</span>
         </div>
       )}
+      
       {message && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          {message}
+        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{message}</span>
         </div>
       )}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email
+      
+      <div className="space-y-2">
+        <label htmlFor="email" className="block text-sm font-semibold text-foreground">
+          Email Address
         </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-          required
-          disabled={loading}
-        />
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+          <Input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="pl-11"
+            placeholder="Enter your email"
+            required
+            disabled={loading}
+          />
+        </div>
       </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password (min 6 characters)
+      
+      <div className="space-y-2">
+        <label htmlFor="password" className="block text-sm font-semibold text-foreground">
+          Password
         </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-          required
-          minLength={6}
-          disabled={loading}
-        />
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+          <Input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="pl-11"
+            placeholder="Create a password (min. 6 characters)"
+            required
+            disabled={loading}
+          />
+        </div>
       </div>
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+      
+      <div className="space-y-2">
+        <label htmlFor="confirmPassword" className="block text-sm font-semibold text-foreground">
           Confirm Password
         </label>
-        <input
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-          required
-          minLength={6}
-          disabled={loading}
-        />
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+          <Input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="pl-11"
+            placeholder="Confirm your password"
+            required
+            disabled={loading}
+          />
+        </div>
       </div>
-      <button
+      
+      <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white hover:shadow-colored"
+        size="lg"
       >
-        {loading ? 'Creating account...' : 'Sign Up'}
-      </button>
+        {loading ? 'Creating account...' : 'Create Account'}
+      </Button>
       
-      <div className="text-center">
-        <div className="text-sm text-gray-600">
+      <div className="text-center space-y-4">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-muted" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-3 text-muted-foreground">or</span>
+          </div>
+        </div>
+        
+        <div className="text-sm text-muted-foreground">
           Already have an account?{' '}
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={onSwitchToLogin}
-            className="text-primary-600 hover:text-primary-700 underline"
+            className="p-0 h-auto font-semibold text-primary hover:text-primary/80"
           >
             Sign in
-          </button>
+          </Button>
         </div>
+      </div>
+      
+      <div className="text-xs text-muted-foreground text-center">
+        By creating an account, you agree to our Terms of Service and Privacy Policy
       </div>
     </form>
   )
