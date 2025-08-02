@@ -19,8 +19,8 @@ interface StepperProgressProps {
 
 export default function StepperProgress({ steps, currentStep }: StepperProgressProps) {
   return (
-    <nav aria-label="Progress" className="mb-12">
-      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-sm">
+    <nav aria-label="Progress" className="mb-16 max-w-4xl mx-auto">
+      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-sm">
         <ol role="list" className="flex items-center justify-between">
           {steps.map((step, stepIdx) => {
             const Icon = step.icon

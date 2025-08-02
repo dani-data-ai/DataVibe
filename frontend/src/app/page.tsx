@@ -124,15 +124,15 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-6 sm:px-8 lg:px-12 py-12 max-w-7xl">
         {/* Header Section */}
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-8 gap-6">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-12 gap-8">
             <div className="flex-1">
               <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
                 <div className="relative">
@@ -227,7 +227,7 @@ export default function Home() {
 
         {user && (
           <motion.div 
-            className="max-w-6xl mx-auto space-y-8"
+            className="max-w-5xl mx-auto space-y-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -240,8 +240,8 @@ export default function Home() {
               className={currentStep === 1 ? 'block' : currentStep > 1 ? 'block' : 'hidden'}
             >
               <Card className={`glass-effect transition-all duration-300 ${currentStep === 1 ? 'ring-2 ring-primary/20 shadow-lg' : ''}`}>
-                <CardHeader>
-                  <div className="flex items-center gap-3">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-4">
                     <div className={`p-3 rounded-xl transition-all duration-300 ${
                       currentStep > 1 ? 'bg-green-100 text-green-600' : 
                       currentStep === 1 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'
@@ -259,7 +259,7 @@ export default function Home() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0 px-8 pb-8">
                   <ConnectionForm onConnectionSuccess={handleConnectionSuccess} />
                 </CardContent>
               </Card>
@@ -273,8 +273,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <Card className={`glass-effect transition-all duration-300 ${currentStep === 2 ? 'ring-2 ring-primary/20 shadow-lg' : ''}`}>
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center gap-4">
                       <div className={`p-3 rounded-xl transition-all duration-300 ${
                         currentStep > 2 ? 'bg-green-100 text-green-600' : 
                         currentStep === 2 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'
@@ -292,7 +292,7 @@ export default function Home() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0 px-8 pb-8">
                     <QueryInput 
                       sessionId={sessionId} 
                       onQueryPreview={handleQueryPreview}
@@ -310,8 +310,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <Card className={`glass-effect transition-all duration-300 ${currentStep === 3 ? 'ring-2 ring-primary/20 shadow-lg' : ''}`}>
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center gap-4">
                       <div className={`p-3 rounded-xl transition-all duration-300 ${
                         currentStep > 3 ? 'bg-green-100 text-green-600' : 
                         currentStep === 3 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'
@@ -329,7 +329,7 @@ export default function Home() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0 px-8 pb-8">
                     <QueryPreview 
                       preview={queryPreview}
                       sessionId={sessionId}
@@ -348,8 +348,8 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <Card className="glass-effect ring-2 ring-green-200/50 shadow-lg">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center gap-4">
                       <div className="p-3 rounded-xl bg-green-100 text-green-600">
                         <BarChart3 className="w-6 h-6" />
                       </div>
@@ -364,7 +364,7 @@ export default function Home() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0 px-8 pb-8">
                     <QueryResults 
                       result={queryResult}
                       sqlQuery={queryPreview?.sql_generated}

@@ -38,6 +38,8 @@
       radial-gradient(circle at 25px 25px, rgba(59, 130, 246, 0.05) 2%, transparent 0%),
       radial-gradient(circle at 75px 75px, rgba(16, 185, 129, 0.05) 2%, transparent 0%);
     background-size: 100px 100px;
+    padding: 0;
+    margin: 0;
   }
 
   h1, h2, h3, h4, h5, h6 {

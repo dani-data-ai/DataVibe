@@ -1,6 +1,26 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { 
+  HelpCircle, 
+  Search, 
+  ArrowLeft, 
+  ChevronRight,
+  X,
+  Database,
+  MessageSquare,
+  FileCheck,
+  BarChart3,
+  Shield,
+  AlertTriangle,
+  Settings
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 interface HelpTopic {
   id: string
@@ -8,6 +28,7 @@ interface HelpTopic {
   category: string
   content: string
   tags: string[]
+  icon: React.ComponentType<{ className?: string }>
 }
 
 interface HelpSystemProps {
@@ -20,6 +41,7 @@ const helpTopics: HelpTopic[] = [
     id: 'getting-started',
     title: 'Getting Started with DataVibe',
     category: 'Basics',
+    icon: HelpCircle,
     content: `
 # Getting Started
 
@@ -51,6 +73,7 @@ DataVibe is a cloud-only, AI-powered database querying tool. Here's how to get s
     id: 'cloud-providers',
     title: 'Supported Cloud Database Providers',
     category: 'Connection',
+    icon: Database,
     content: `
 # Cloud Database Providers
 
@@ -87,6 +110,7 @@ DataVibe only connects to cloud-hosted databases for security and reliability.
     id: 'natural-language',
     title: 'Natural Language Query Tips',
     category: 'Querying',
+    icon: MessageSquare,
     content: `
 # Natural Language Querying
 
@@ -134,6 +158,7 @@ DataVibe's AI can understand your questions and convert them to SQL.
     id: 'sql-editing',
     title: 'SQL Editor Features',
     category: 'Querying',
+    icon: FileCheck,
     content: `
 # SQL Editor
 
@@ -181,6 +206,7 @@ The SQL editor provides powerful features for reviewing and editing queries.
     id: 'results-features',
     title: 'Working with Query Results',
     category: 'Results',
+    icon: BarChart3,
     content: `
 # Query Results Features
 
@@ -240,6 +266,7 @@ DataVibe provides powerful tools for analyzing your query results.
     id: 'security',
     title: 'Security & Privacy',
     category: 'Security',
+    icon: Shield,
     content: `
 # Security & Privacy
 
@@ -304,6 +331,7 @@ DataVibe is designed with security and privacy as top priorities.
     id: 'troubleshooting',
     title: 'Troubleshooting Common Issues',
     category: 'Support',
+    icon: AlertTriangle,
     content: `
 # Troubleshooting
 
@@ -416,202 +444,297 @@ export default function HelpSystem({ currentStep, className = '' }: HelpSystemPr
 
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
+      <div className={cn("fixed bottom-6 right-6 z-50", className)}>
         {/* Contextual Help Tooltip */}
-        {contextualTopic && (
-          <div className="mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-xs shadow-lg animate-in slide-in-from-bottom-2 duration-300">
-            <div className="flex items-start space-x-2">
-              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-blue-900">{contextualTopic.title}</p>
-                <p className="text-xs text-blue-700 mt-1">Click help for more details</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {contextualTopic && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="mb-3 max-w-xs"
+            >
+              <Card className="bg-blue-50 border-blue-200 shadow-lg">
+                <CardContent className="p-3">
+                  <div className="flex items-start space-x-2">
+                    <div className="p-1 bg-blue-100 rounded-md">
+                      <contextualTopic.icon className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-blue-900 truncate">
+                        {contextualTopic.title}
+                      </p>
+                      <p className="text-xs text-blue-700 mt-0.5">
+                        Click help for more details
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Help Button */}
-        <button
+        <Button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-105"
+          size="icon"
+          className="w-12 h-12 rounded-full shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90"
           title="Help & Documentation"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
+          <HelpCircle className="w-5 h-5" />
+        </Button>
       </div>
     )
   }
 
   return (
-    <div className={`fixed inset-0 z-50 ${className}`}>
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsOpen(false)}></div>
-      
-      {/* Help Panel */}
-      <div className="absolute inset-y-0 right-0 w-full max-w-2xl bg-white shadow-xl">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Help & Documentation</h2>
-              <p className="text-sm text-gray-600 mt-1">Get help with DataVibe features</p>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Search and Filters */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="space-y-4">
-              {/* Search */}
-              <div className="relative">
-                <svg className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search help topics..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+    <AnimatePresence>
+      <div className={cn("fixed inset-0 z-50", className)}>
+        {/* Backdrop */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+          onClick={() => setIsOpen(false)}
+        />
+        
+        {/* Help Panel */}
+        <motion.div
+          initial={{ opacity: 0, x: "100%" }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: "100%" }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          className="absolute inset-y-0 right-0 w-full max-w-2xl"
+        >
+          <Card className="h-full rounded-none border-l shadow-2xl">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <HelpCircle className="w-5 h-5 text-blue-600" />
+                      </div>
+                      Help & Documentation
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      Get help with DataVibe features and workflows
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    className="text-gray-500 hover:text-gray-700"
                   >
-                    {category}
-                  </button>
-                ))}
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+              </CardHeader>
+
+              {/* Search and Filters */}
+              <div className="p-6 border-b bg-gray-50/50">
+                <div className="space-y-4">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Search help topics..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category)}
+                        className="h-7 text-xs"
+                      >
+                        {category}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
           {/* Content */}
           <div className="flex-1 overflow-hidden">
             {selectedTopic ? (
               /* Topic Detail View */
-              <div className="h-full flex flex-col">
-                <div className="p-6 border-b border-gray-200">
-                  <button
+              <motion.div
+                key="detail"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="h-full flex flex-col"
+              >
+                <div className="p-6 border-b bg-white">
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setSelectedTopic(null)}
-                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center mb-3"
+                    className="mb-4 -ml-1 text-muted-foreground hover:text-foreground"
                   >
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
+                    <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to topics
-                  </button>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedTopic.title}</h3>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {selectedTopic.category}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-6">
-                  <div className="prose prose-sm max-w-none">
-                    <div dangerouslySetInnerHTML={{ 
-                      __html: selectedTopic.content
-                        .replace(/^# (.+$)/gm, '<h1 class="text-lg font-semibold text-gray-900 mb-3">$1</h1>')
-                        .replace(/^## (.+$)/gm, '<h2 class="text-base font-semibold text-gray-900 mb-2 mt-6">$1</h2>')
-                        .replace(/^### (.+$)/gm, '<h3 class="text-sm font-semibold text-gray-900 mb-2 mt-4">$1</h3>')
-                        .replace(/^\- (.+$)/gm, '<li class="text-sm text-gray-700 mb-1">$1</li>')
-                        .replace(/^([^#\-\n]+)$/gm, '<p class="text-sm text-gray-700 mb-3">$1</p>')
-                        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono">$1</code>')
-                        .replace(/❌/g, '<span class="text-red-600">❌</span>')
-                        .replace(/✅/g, '<span class="text-green-600">✅</span>')
-                    }} 
-                  />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* Topics List View */
-              <div className="h-full overflow-y-auto">
-                {contextualTopic && (
-                  <div className="p-6 bg-blue-50 border-b border-blue-200">
-                    <div className="flex items-start space-x-3">
-                      <svg className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <div className="flex-1">
-                        <h4 className="text-sm font-semibold text-blue-900 mb-1">Contextual Help</h4>
-                        <p className="text-sm text-blue-800">{contextualTopic.title}</p>
-                        <button
-                          onClick={() => setSelectedTopic(contextualTopic)}
-                          className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
-                        >
-                          Read more →
-                        </button>
+                  </Button>
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <selectedTopic.icon className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {selectedTopic.title}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">{selectedTopic.category}</Badge>
+                        <div className="flex gap-1">
+                          {selectedTopic.tags.slice(0, 3).map((tag) => (
+                            <Badge key={tag} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  <CardContent className="p-6">
+                    <div className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono prose-strong:text-gray-900">
+                      <div dangerouslySetInnerHTML={{ 
+                        __html: selectedTopic.content
+                          .replace(/^# (.+$)/gm, '<h1 class="text-lg font-semibold text-gray-900 mb-4 mt-0">$1</h1>')
+                          .replace(/^## (.+$)/gm, '<h2 class="text-base font-semibold text-gray-900 mb-3 mt-6">$1</h2>')
+                          .replace(/^### (.+$)/gm, '<h3 class="text-sm font-semibold text-gray-900 mb-2 mt-4">$1</h3>')
+                          .replace(/^- (.+$)/gm, '<li class="text-sm text-gray-700 mb-1 ml-4">$1</li>')
+                          .replace(/^([^#\-\n]+)$/gm, '<p class="text-sm text-gray-700 mb-3">$1</p>')
+                          .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+                          .replace(/`(.+?)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-xs font-mono text-gray-800">$1</code>')
+                          .replace(/❌/g, '<span class="text-red-600 font-medium">❌</span>')
+                          .replace(/✅/g, '<span class="text-green-600 font-medium">✅</span>')
+                      }} 
+                      />
+                    </div>
+                  </CardContent>
+                </div>
+              </motion.div>
+            ) : (
+              /* Topics List View */
+              <motion.div
+                key="list"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="h-full overflow-y-auto"
+              >
+                {contextualTopic && (
+                  <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200">
+                    <Card className="bg-white/60 backdrop-blur-sm border-blue-200/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <contextualTopic.icon className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                              Contextual Help
+                            </h4>
+                            <p className="text-sm text-blue-800 mb-3">
+                              {contextualTopic.title}
+                            </p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedTopic(contextualTopic)}
+                              className="h-auto p-0 text-blue-600 hover:text-blue-800"
+                            >
+                              Read more
+                              <ChevronRight className="w-3 h-3 ml-1" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
 
                 <div className="p-6">
-                  <div className="space-y-3">
-                    {filteredTopics.map((topic) => (
-                      <button
+                  <div className="grid gap-3">
+                    {filteredTopics.map((topic, index) => (
+                      <motion.div
                         key={topic.id}
-                        onClick={() => setSelectedTopic(topic)}
-                        className="w-full text-left p-4 bg-white border border-gray-200 hover:border-gray-300 rounded-lg transition-all duration-200 hover:shadow-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-semibold text-gray-900 mb-1">{topic.title}</h4>
-                            <p className="text-xs text-gray-500 mb-2">{topic.category}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {topic.tags.slice(0, 3).map((tag) => (
-                                <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                                  {tag}
-                                </span>
-                              ))}
+                        <Card className="group hover:shadow-md transition-all duration-200 hover:border-gray-300 cursor-pointer"
+                              onClick={() => setSelectedTopic(topic)}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-3 flex-1">
+                                <div className="p-2 bg-gray-50 group-hover:bg-blue-50 rounded-lg transition-colors">
+                                  <topic.icon className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-sm font-semibold text-gray-900 mb-1 group-hover:text-blue-900 transition-colors">
+                                    {topic.title}
+                                  </h4>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge variant="outline" className="text-xs">
+                                      {topic.category}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {topic.tags.slice(0, 3).map((tag) => (
+                                      <Badge key={tag} variant="secondary" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 ml-2" />
                             </div>
-                          </div>
-                          <svg className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                      </button>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
                     ))}
                   </div>
 
                   {filteredTopics.length === 0 && (
-                    <div className="text-center py-8">
-                      <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <p className="text-sm text-gray-500">No help topics found</p>
-                      <p className="text-xs text-gray-400 mt-1">Try adjusting your search or category filter</p>
-                    </div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-12"
+                    >
+                      <div className="p-4 bg-gray-50 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                        <Search className="w-6 h-6 text-gray-400" />
+                      </div>
+                      <h3 className="text-sm font-medium text-gray-900 mb-1">No help topics found</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Try adjusting your search or category filter
+                      </p>
+                    </motion.div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )}
-          </div>
-        </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   )
 }
