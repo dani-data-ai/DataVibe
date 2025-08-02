@@ -1,19 +1,24 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import AuthModal from '@/components/auth/AuthModal'
 import ConnectionForm from '@/components/database/ConnectionForm'
 import QueryInput from '@/components/query/QueryInput'
 import QueryPreview from '@/components/query/QueryPreview'
 import QueryResults from '@/components/results/QueryResults'
+import { api } from '@/lib/api'
 
 export default function Home() {
-  const [connectionString, setConnectionString] = useState('')
+  const { user, loading, signOut } = useAuth()
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [sessionId, setSessionId] = useState('')
   const [queryPreview, setQueryPreview] = useState(null)
   const [queryResult, setQueryResult] = useState(null)
   const [currentStep, setCurrentStep] = useState(1)
 
-  const handleConnectionSuccess = (connStr: string) => {
-    setConnectionString(connStr)
+  const handleConnectionSuccess = (session_id: string) => {
+    setSessionId(session_id)
     setCurrentStep(2)
   }
 
@@ -33,19 +38,70 @@ export default function Home() {
     setCurrentStep(2)
   }
 
+  const resetToConnection = () => {
+    setSessionId('')
+    setQueryPreview(null)
+    setQueryResult(null)
+    setCurrentStep(1)
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            DataVibe ⚡
-          </h1>
-          <p className="text-xl text-gray-600 mb-2">
-            AI-powered natural language database interaction
-          </p>
-          <div className="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-lg inline-block">
-            ☁️ Cloud-only • 🔒 Read-only • 🆓 Free-tier providers only
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                DataVibe ⚡
+              </h1>
+              <p className="text-xl text-gray-600 mb-2">
+                AI-powered natural language database interaction
+              </p>
+              <div className="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-lg inline-block">
+                ☁️ Cloud-only • 🔒 Read-only • 🆓 Free-tier providers only
+              </div>
+            </div>
+            
+            {user ? (
+              <div className="text-right">
+                <p className="text-sm text-gray-600 mb-2">
+                  Welcome, {user.email}
+                </p>
+                <button
+                  onClick={() => signOut()}
+                  className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700"
+              >
+                Sign In
+              </button>
+            )}
           </div>
+          
+          {!user && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-yellow-800">
+                🔐 Authentication required. Please sign in to access DataVibe.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Progress Steps */}
