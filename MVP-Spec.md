@@ -47,6 +47,48 @@ Lovable AI for Databases is a web application that enables users to manage and q
 - Provide a modern web interface that abstracts away direct SQL interaction, focusing on usability and security.
 
 ---
+## Key Architectural Constraints
+
+- **Cloud-Only, API-First:**  
+  The app must use only remote, cloud-hosted services via public APIs (HTTPS). No component may require local storage, local servers, or local ports.
+- **Codespaces-Only:**  
+  The entire MVP must run in GitHub Codespaces, in-browser. No installation, local config, or developer laptop is required or permitted.
+- **Free Tier Providers:**  
+  All third-party services (auth, DB, LLM, etc.) must be chosen from providers with a free tier or generous trial. If only paid solutions exist, the app must prompt for user approval.
+- **No Local Persistence:**  
+  No data, state, config, or secrets are to be stored in the Codespace filesystem or in any local file.
+- **Secrets & Credentials:**  
+  All API keys, DB credentials, and tokens must be provided at runtime via environment variables or secure user input. Never commit or persist secrets.
+
+---
+
+## Core User Journey
+
+1. **Authentication:**  
+   - Users authenticate via a remote free-tier provider (e.g., Auth0, Firebase Auth, Supabase Auth).
+   - No credentials or user data are stored locally; only session-based access.
+2. **Database Connection:**  
+   - Users connect to a remote, free-tier SQL database (Neon, Supabase, PlanetScale, etc.) by providing credentials at runtime.
+   - The app never manages or creates a local or containerized database.
+3. **Natural Language Querying:**  
+   - Users enter a natural language question.
+   - The backend calls a remote LLM API (OpenAI, Gemini, open/free alternatives) to convert the prompt to SQL.
+   - The generated SQL is always previewed and approved by the user before execution.
+4. **Result Viewing:**  
+   - Executed SQL returns results that are displayed in the UI.
+   - No result data is persisted between sessions or stored anywhere except in memory.
+5. **Test & Validation:**  
+   - Automated tests run in Codespaces, verifying all flows are API-only and that no local state is created.
+## Out of Scope
+
+- Anything requiring local storage, local servers, or installation on a developer’s computer.
+- Paid third-party services unless user explicitly opts in.
+- Any feature that persists state in Codespaces or on disk.
+## Provider Policy
+
+- **Default to free-tier or free trial providers.**
+- If a required service is not available for free, the user must be prompted and approve before any integration.
+- Preference given to providers with easy sign-up and API documentation.
 
 ## 2. Core User Stories & Flows
 
