@@ -13,6 +13,7 @@ import QueryResults from '@/components/results/QueryResults'
 import StepperProgress from '@/components/ui/StepperProgress'
 import SessionManager from '@/components/session/SessionManager'
 import HelpSystem from '@/components/help/HelpSystem'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import { 
   Database, 
   MessageSquare, 
@@ -153,7 +154,7 @@ export default function Home() {
       </div>
 
       {/* Navigation Header */}
-      <nav className="relative z-10 border-b border-white/10 backdrop-blur-md bg-white/80">
+      <nav className="relative z-10 border-b border-white/10 dark:border-white/20 backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <motion.div 
@@ -174,34 +175,37 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {user ? (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-white/20">
-                    <div className="w-8 h-8 bg-gradient-to-r from-primary to-emerald-500 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
+                {user ? (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/10 backdrop-blur-sm border border-white/20 dark:border-white/10">
+                      <div className="w-8 h-8 bg-gradient-to-r from-primary to-emerald-500 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground hidden sm:inline">
+                        {user.email?.split('@')[0]}
+                      </span>
                     </div>
-                    <span className="text-sm font-medium text-foreground hidden sm:inline">
-                      {user.email?.split('@')[0]}
-                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => signOut()}
+                      className="hover:bg-white/50 dark:hover:bg-white/10"
+                    >
+                      Sign Out
+                    </Button>
                   </div>
+                ) : (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => signOut()}
-                    className="hover:bg-white/50"
+                    onClick={() => setShowAuthModal(true)}
+                    className="bg-gradient-primary hover:shadow-colored transition-all duration-300"
                   >
-                    Sign Out
+                    <User className="w-4 h-4 mr-2" />
+                    Sign In
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={() => setShowAuthModal(true)}
-                  className="bg-gradient-primary hover:shadow-colored transition-all duration-300"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Sign In
-                </Button>
-              )}
+                )}
+              </div>
             </motion.div>
           </div>
         </div>
