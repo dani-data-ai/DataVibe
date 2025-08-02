@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { api } from '@/lib/api'
 
 interface QueryPreview {
   query_id: string
@@ -12,11 +13,11 @@ interface QueryPreview {
 
 interface QueryPreviewProps {
   preview: QueryPreview
-  connectionString: string
+  sessionId: string
   onExecute: (result: any) => void
 }
 
-export default function QueryPreview({ preview, connectionString, onExecute }: QueryPreviewProps) {
+export default function QueryPreview({ preview, sessionId, onExecute }: QueryPreviewProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [editedSql, setEditedSql] = useState(preview.sql_generated)
@@ -26,26 +27,14 @@ export default function QueryPreview({ preview, connectionString, onExecute }: Q
     setError('')
 
     try {
-      const response = await fetch('/api/query/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query_id: preview.query_id,
-          connection_string: connectionString,
-          sql_query: editedSql,
-          confirm_execution: true
-        }),
+      const result = await api.executeQuery({
+        session_id: sessionId,
+        query_id: preview.query_id,
+        sql_query: editedSql,
+        confirm_execution: true
       })
-
-      const result = await response.json()
       
-      if (response.ok) {
-        onExecute(result)
-      } else {
-        setError(result.detail || 'Query execution failed')
-      }
+      onExecute(result)
     } catch (err) {
       setError('Network error: Unable to execute query')
     } finally {

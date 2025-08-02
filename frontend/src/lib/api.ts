@@ -64,6 +64,41 @@ class APIClient {
     })
     return this.handleResponse(response)
   }
+
+  // Session management
+  async createSession(data: { connection_string: string; name?: string }) {
+    return this.post(endpoints.sessions.create, data)
+  }
+
+  async listSessions() {
+    return this.get(endpoints.sessions.list)
+  }
+
+  async destroySession(sessionId: string) {
+    return this.delete(endpoints.sessions.destroy(sessionId))
+  }
+
+  // Query operations
+  async generateQuery(data: { session_id: string; prompt: string }) {
+    return this.post(endpoints.query.preview, data)
+  }
+
+  async executeQuery(data: { session_id: string; query_id: string; sql_query: string; confirm_execution: boolean }) {
+    return this.post(endpoints.query.execute, data)
+  }
+
+  // Authentication
+  async getAuthStatus() {
+    return this.get(endpoints.auth.status)
+  }
+
+  async getMe() {
+    return this.get(endpoints.auth.me)
+  }
+
+  async testProtected() {
+    return this.get(endpoints.auth.testProtected)
+  }
 }
 
 export const api = new APIClient()

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { api } from '@/lib/api'
 
 interface Provider {
   name: string
@@ -10,7 +11,7 @@ interface Provider {
   free_tier: boolean
 }
 
-export default function ConnectionForm({ onConnectionSuccess }: { onConnectionSuccess?: (connectionString: string) => void }) {
+export default function ConnectionForm({ onConnectionSuccess }: { onConnectionSuccess?: (sessionId: string) => void }) {
   const [connectionString, setConnectionString] = useState('')
   const [connectionName, setConnectionName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -49,23 +50,15 @@ export default function ConnectionForm({ onConnectionSuccess }: { onConnectionSu
     setSuccess('')
 
     try {
-      const response = await fetch('/api/database/test-connection', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          connection_string: connectionString,
-          name: connectionName || 'Test Connection'
-        }),
+      const result = await api.createSession({
+        connection_string: connectionString,
+        name: connectionName || 'Test Connection'
       })
-
-      const result = await response.json()
       
-      if (result.success) {
-        setSuccess(`✅ Connected successfully to ${result.provider}!`)
+      if (result.session_id) {
+        setSuccess(`✅ Connected successfully to ${result.provider || 'database'}!`)
         if (onConnectionSuccess) {
-          onConnectionSuccess(connectionString)
+          onConnectionSuccess(result.session_id)
         }
       } else {
         setError(result.message || 'Connection failed')

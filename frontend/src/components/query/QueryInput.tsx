@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { api } from '@/lib/api'
 
 interface QueryPreview {
   query_id: string
@@ -11,11 +12,11 @@ interface QueryPreview {
 }
 
 interface QueryInputProps {
-  connectionString: string
+  sessionId: string
   onQueryPreview: (preview: QueryPreview) => void
 }
 
-export default function QueryInput({ connectionString, onQueryPreview }: QueryInputProps) {
+export default function QueryInput({ sessionId, onQueryPreview }: QueryInputProps) {
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -28,24 +29,12 @@ export default function QueryInput({ connectionString, onQueryPreview }: QueryIn
     setError('')
     
     try {
-      const response = await fetch('/api/query/preview', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: query,
-          connection_string: connectionString
-        }),
+      const result = await api.generateQuery({
+        session_id: sessionId,
+        prompt: query
       })
-
-      const result = await response.json()
       
-      if (response.ok) {
-        onQueryPreview(result)
-      } else {
-        setError(result.detail || 'Failed to generate query preview')
-      }
+      onQueryPreview(result)
     } catch (err) {
       setError('Network error: Unable to process query')
     } finally {
@@ -53,7 +42,7 @@ export default function QueryInput({ connectionString, onQueryPreview }: QueryIn
     }
   }
 
-  if (!connectionString) {
+  if (!sessionId) {
     return (
       <div className="bg-gray-100 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-600">Ask a Question</h2>
