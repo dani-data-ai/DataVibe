@@ -87,6 +87,11 @@ class APIClient {
     return this.post(endpoints.query.execute, data)
   }
 
+  // Database operations
+  async testConnection(data: { connection_string: string; name?: string }) {
+    return this.post(endpoints.database.testConnection, data)
+  }
+
   // Authentication
   async getAuthStatus() {
     return this.get(endpoints.auth.status)
