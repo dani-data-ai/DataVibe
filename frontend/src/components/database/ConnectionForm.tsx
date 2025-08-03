@@ -225,10 +225,12 @@ export default function ConnectionForm({ onConnectionSuccess }: { onConnectionSu
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center"
+              className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg"
             >
-              <AlertCircle className="w-5 h-5 mr-2 text-red-600" />
-              {error}
+              <div className="flex items-start">
+                <AlertCircle className="w-5 h-5 mr-2 text-red-600 mt-0.5 flex-shrink-0" />
+                <div className="whitespace-pre-line text-sm leading-relaxed">{error}</div>
+              </div>
             </motion.div>
           )}
           {success && (

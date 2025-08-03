@@ -86,18 +86,30 @@ class CloudDatabaseService:
             provider = CloudDatabaseService._detect_provider(connection_string)
             
             # Provide specific error messages for common issues
-            if "timeout" in error_msg:
-                message = f"Connection timeout. Please check your {provider} database is running and accessible."
-            elif "authentication" in error_msg or "password" in error_msg:
-                message = f"Authentication failed. Please check your {provider} username and password."
+            if "wrong password" in error_msg or "authentication failed" in error_msg:
+                message = f"❌ WRONG PASSWORD: The password for your {provider} database is incorrect. Please:\n• Check your {provider} dashboard for the correct password\n• Reset your database password if needed\n• Ensure no extra spaces in the connection string"
+            elif "scram exchange" in error_msg and "wrong password" in error_msg:
+                message = f"❌ AUTHENTICATION ERROR: Wrong password for {provider} database. Please:\n• Go to {provider} Dashboard → Settings → Database\n• Reset your database password\n• Update your connection string with the new password"
+            elif "no address associated with hostname" in error_msg or "name or service not known" in error_msg:
+                message = f"❌ PROJECT NOT FOUND: Your {provider} project appears to be unavailable. Please:\n• Check if your {provider} project is paused (free tier projects pause after inactivity)\n• Verify the project ID in your connection string\n• Resume the project in your {provider} dashboard if paused"
+            elif "network is unreachable" in error_msg:
+                message = f"❌ PROJECT UNAVAILABLE: Cannot reach your {provider} database. This usually means:\n• Your {provider} project is paused or inactive\n• Network connectivity issues\n• Please check your {provider} dashboard and resume the project if needed"
+            elif "timeout" in error_msg:
+                message = f"⏱️ CONNECTION TIMEOUT: Cannot connect to {provider} within 15 seconds. This might be:\n• Temporary network issues\n• {provider} service experiencing delays\n• Try again in a few moments"
             elif "database" in error_msg and "does not exist" in error_msg:
-                message = f"Database not found. Please check your {provider} database name."
+                message = f"❌ DATABASE NOT FOUND: The specified database name doesn't exist. For {provider}:\n• Use 'postgres' as the database name (default)\n• Check your connection string format\n• Verify the database name in your {provider} dashboard"
             elif "connection refused" in error_msg:
-                message = f"Connection refused. Please check your {provider} host and port."
+                message = f"❌ CONNECTION REFUSED: {provider} server refused the connection. Please:\n• Verify your host and port are correct\n• Check if {provider} is experiencing outages\n• Ensure your IP is allowed (most free tiers allow all IPs)"
             elif "ssl" in error_msg:
-                message = f"SSL connection issue with {provider}. This is usually a temporary network issue."
+                message = f"🔒 SSL ERROR: SSL connection issue with {provider}. Please:\n• Ensure your connection string includes '?sslmode=require'\n• This is usually a temporary network issue\n• Try again in a few moments"
+            elif "role" in error_msg and "does not exist" in error_msg:
+                message = f"❌ USER NOT FOUND: The username in your connection string doesn't exist. For {provider}:\n• Username is usually 'postgres' for Supabase\n• Check your connection string format\n• Verify username in your {provider} dashboard"
             else:
-                message = f"Connection failed: {str(e)}"
+                # Catch-all with more helpful context
+                if "supabase" in provider.lower():
+                    message = f"❌ {provider} CONNECTION FAILED: {str(e)}\n\n💡 Common fixes:\n• Check if project is paused in Supabase dashboard\n• Verify password is correct\n• Use format: postgresql://postgres:password@db.project.supabase.co:5432/postgres"
+                else:
+                    message = f"❌ CONNECTION FAILED: {str(e)}\n\n💡 Please check your connection string format and credentials"
             
             return {
                 "success": False,
