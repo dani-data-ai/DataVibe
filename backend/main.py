@@ -6,6 +6,8 @@ from app.api.database import router as database_router
 from app.api.query import router as query_router
 from app.api.sessions import router as sessions_router
 from app.api.auth import router as auth_router
+from app.api.audit import router as audit_router
+from app.api.schema import router as schema_router
 from app.core.background_tasks import background_tasks
 
 @asynccontextmanager
@@ -37,6 +39,8 @@ app.include_router(auth_router, prefix="/auth", tags=["authentication"])
 app.include_router(database_router, prefix="/database", tags=["database"])
 app.include_router(query_router, prefix="/query", tags=["query"])
 app.include_router(sessions_router, prefix="/sessions", tags=["sessions"])
+app.include_router(audit_router, prefix="/audit", tags=["audit"])
+app.include_router(schema_router, prefix="/schema", tags=["schema"])
 
 @app.get("/")
 async def root():
@@ -48,6 +52,8 @@ async def root():
             "Remote database connections only",
             "Natural language to SQL conversion",
             "Read-only query execution",
+            "Schema change management",
+            "Comprehensive audit logging",
             "No local persistence"
         ],
         "docs": "/docs",
