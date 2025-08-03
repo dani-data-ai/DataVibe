@@ -5,7 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
-  NEXT_PUBLIC_API_URL = "https://your-datavibe-backend.onrender.com"
+  NEXT_PUBLIC_API_URL = "https://datavibe.onrender.com"
 
 [[redirects]]
   from = "/*"
