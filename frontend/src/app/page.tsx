@@ -179,6 +179,36 @@ export default function Home() {
                 <ThemeToggle />
                 {user ? (
                   <div className="flex items-center gap-4">
+                    {/* Navigation Links */}
+                    <div className="hidden md:flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.location.href = '/'}
+                        className="hover:bg-white/50 dark:hover:bg-white/10"
+                      >
+                        Query
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.location.href = '/schema'}
+                        className="hover:bg-white/50 dark:hover:bg-white/10"
+                      >
+                        Schema
+                      </Button>
+                      {user?.user_metadata?.role === 'admin' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.location.href = '/admin'}
+                          className="hover:bg-white/50 dark:hover:bg-white/10"
+                        >
+                          Admin
+                        </Button>
+                      )}
+                    </div>
+                    
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-white/10 backdrop-blur-sm border border-white/20 dark:border-white/10">
                       <div className="w-8 h-8 bg-gradient-to-r from-primary to-emerald-500 rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
