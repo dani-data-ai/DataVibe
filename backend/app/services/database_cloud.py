@@ -2,6 +2,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, text
 from typing import Dict, Any, List, Optional
 import re
+from .supabase_rest_service import SupabaseRestService
 
 class CloudDatabaseService:
     """Service for connecting to remote cloud databases"""
@@ -47,7 +48,45 @@ class CloudDatabaseService:
             # Detect provider for better error messages
             provider = CloudDatabaseService._detect_provider(connection_string)
             
-            # Create engine with appropriate settings for cloud databases
+            # For Supabase, try REST API first if in restrictive network environment
+            if '.supabase.co' in connection_string.lower():
+                try:
+                    # Try direct PostgreSQL connection first
+                    engine_args = {"connect_timeout": 8}  # Shorter timeout for quick fallback
+                    engine_args["sslmode"] = "require"
+                    
+                    engine = create_engine(connection_string, connect_args=engine_args)
+                    
+                    with engine.connect() as conn:
+                        result = conn.execute(text("SELECT 1 as test"))
+                        row = result.fetchone()
+                        
+                        if row and row[0] == 1:
+                            return {
+                                "success": True,
+                                "message": f"✅ Successfully connected to {provider} via PostgreSQL",
+                                "provider": provider,
+                                "connection_method": "Direct PostgreSQL"
+                            }
+                        
+                except Exception as pg_error:
+                    # If PostgreSQL fails, try REST API fallback
+                    print(f"PostgreSQL connection failed, trying REST API fallback: {str(pg_error)}")
+                    rest_result = SupabaseRestService.test_connection(connection_string)
+                    
+                    if rest_result["success"]:
+                        return rest_result
+                    else:
+                        # Return both error messages
+                        return {
+                            "success": False,
+                            "message": f"❌ Both PostgreSQL and REST API failed:\n• PostgreSQL: {str(pg_error)}\n• REST API: {rest_result['message']}",
+                            "provider": provider,
+                            "postgresql_error": str(pg_error),
+                            "rest_api_error": rest_result['message']
+                        }
+            
+            # For non-Supabase providers, use original logic
             engine_args = {"connect_timeout": 15}
             
             # Add SSL settings for cloud providers

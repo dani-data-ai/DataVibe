@@ -1,16 +1,32 @@
+# Core FastAPI and server requirements
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
+
+# Database and ORM
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
+
+# Configuration and utilities
 python-dotenv==1.0.0
 python-multipart==0.0.6
 pydantic==2.5.0
 pydantic-settings==2.1.0
-httpx==0.25.2
-pytest==7.4.3
-pytest-asyncio==0.21.1
+
+# HTTP client and requests (compatible with supabase)
+httpx==0.24.1
+requests==2.31.0
+
+# Security and authentication
 cryptography==41.0.7
 pyjwt==2.8.0
+
+# Cloud services (this constrains httpx version)
 supabase==2.3.0
+
+# AI/LLM APIs
 openai==1.50.2
 anthropic==0.39.0
+
+# Testing (optional for production)
+pytest==7.4.3
+pytest-asyncio==0.21.1
