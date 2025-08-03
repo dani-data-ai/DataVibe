@@ -13,6 +13,7 @@ class CloudDatabaseService:
             r'.*\.neon\.tech',
             r'.*\.supabase\.co',
             r'.*\.planetscale\.sh',
+            r'.*\.psdb\.cloud',
             r'.*\.amazonaws\.com',
             r'.*\.googleapis\.com',
             r'.*\.azure\.com',
@@ -40,25 +41,69 @@ class CloudDatabaseService:
     def test_connection(connection_string: str) -> Dict[str, Any]:
         """Test connection to remote database"""
         try:
+            # Validate connection string format
             CloudDatabaseService.validate_connection_string(connection_string)
             
-            engine = create_engine(connection_string, connect_args={"connect_timeout": 10})
+            # Detect provider for better error messages
+            provider = CloudDatabaseService._detect_provider(connection_string)
             
+            # Create engine with appropriate settings for cloud databases
+            engine_args = {"connect_timeout": 15}
+            
+            # Add SSL settings for cloud providers
+            if any(domain in connection_string.lower() for domain in ['.supabase.co', '.neon.tech', '.psdb.cloud']):
+                engine_args["sslmode"] = "require"
+            
+            engine = create_engine(connection_string, connect_args=engine_args)
+            
+            # Test the connection
             with engine.connect() as conn:
                 result = conn.execute(text("SELECT 1 as test"))
                 row = result.fetchone()
                 
-            return {
-                "success": True,
-                "message": "Connection successful",
-                "provider": CloudDatabaseService._detect_provider(connection_string)
-            }
-            
-        except Exception as e:
+                if row and row[0] == 1:
+                    return {
+                        "success": True,
+                        "message": f"Successfully connected to {provider}",
+                        "provider": provider
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": "Connection test query failed",
+                        "provider": provider
+                    }
+                
+        except ValueError as ve:
+            # Validation errors (cloud provider check, etc.)
             return {
                 "success": False,
-                "message": f"Connection failed: {str(e)}",
+                "message": str(ve),
                 "provider": None
+            }
+        except Exception as e:
+            error_msg = str(e).lower()
+            provider = CloudDatabaseService._detect_provider(connection_string)
+            
+            # Provide specific error messages for common issues
+            if "timeout" in error_msg:
+                message = f"Connection timeout. Please check your {provider} database is running and accessible."
+            elif "authentication" in error_msg or "password" in error_msg:
+                message = f"Authentication failed. Please check your {provider} username and password."
+            elif "database" in error_msg and "does not exist" in error_msg:
+                message = f"Database not found. Please check your {provider} database name."
+            elif "connection refused" in error_msg:
+                message = f"Connection refused. Please check your {provider} host and port."
+            elif "ssl" in error_msg:
+                message = f"SSL connection issue with {provider}. This is usually a temporary network issue."
+            else:
+                message = f"Connection failed: {str(e)}"
+            
+            return {
+                "success": False,
+                "message": message,
+                "provider": provider,
+                "error_details": str(e)
             }
     
     @staticmethod
@@ -68,7 +113,7 @@ class CloudDatabaseService:
             return 'Neon'
         elif '.supabase.co' in connection_string.lower():
             return 'Supabase'
-        elif '.planetscale.sh' in connection_string.lower():
+        elif '.planetscale.sh' in connection_string.lower() or '.psdb.cloud' in connection_string.lower():
             return 'PlanetScale'
         elif '.amazonaws.com' in connection_string.lower():
             return 'AWS RDS'

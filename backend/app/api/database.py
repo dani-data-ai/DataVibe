@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from typing import Dict, Any
 from app.services.database_cloud import CloudDatabaseService
+from app.middleware.auth import get_current_user
 
 router = APIRouter()
 
@@ -13,7 +15,10 @@ class DatabaseQueryRequest(BaseModel):
     sql_query: str
 
 @router.post("/test-connection")
-async def test_database_connection(request: ConnectionTestRequest):
+async def test_database_connection(
+    request: ConnectionTestRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """Test connection to a remote cloud database"""
     try:
         result = CloudDatabaseService.test_connection(request.connection_string)

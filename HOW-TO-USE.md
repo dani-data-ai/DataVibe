@@ -312,16 +312,68 @@ The overview dashboard shows:
 
 **Problem**: "Connection failed" error
 **Solutions**:
-1. Verify your connection string format
-2. Check database credentials
-3. Ensure database server is accessible
-4. Try connecting from another client to verify database is running
+1. **Check Connection String Format**: Ensure your connection string matches the provider format exactly
+2. **Verify Credentials**: Double-check username, password, host, and database name
+3. **Test Provider Access**: Try connecting from the provider's web interface first
+4. **Check SSL Requirements**: Most cloud providers require SSL connections
+5. **Firewall/Network**: Ensure your network allows outbound connections to the database host
+
+**Problem**: Supabase Connection Issues
+**Common Solutions**:
+1. **Use the correct format**: `postgresql://postgres:your-password@db.your-project.supabase.co:5432/postgres`
+2. **Check project settings**: Go to Supabase → Settings → Database for connection details
+3. **Verify password**: Reset database password if needed in Supabase dashboard
+4. **Enable SSL**: Supabase requires SSL connections - this is handled automatically
+5. **Check IP restrictions**: Ensure your IP is allowed (Supabase free tier allows all IPs by default)
 
 **Problem**: "Database not found" error
 **Solutions**:
-1. Check the database name in your connection string
-2. Verify you have access to the specified database
-3. Ensure the database exists on the server
+1. For Supabase: Use `postgres` as database name (default)
+2. For Neon: Use the database name from your Neon dashboard
+3. For PlanetScale: Use the database name from your PlanetScale dashboard
+4. Check the exact database name in your provider's console
+
+**Problem**: "Authentication failed" error
+**Solutions**:
+1. **Reset Password**: Use your provider's dashboard to reset the database password
+2. **Check Username**: 
+   - Supabase: Usually `postgres`
+   - Neon: Your chosen username
+   - PlanetScale: Your created username
+3. **Special Characters**: If password contains special characters, ensure they're URL-encoded
+4. **Copy-Paste**: Copy connection string directly from provider to avoid typos
+
+**Problem**: "Connection timeout" error
+**Solutions**:
+1. **Network Issues**: Check your internet connection
+2. **Provider Status**: Check if your database provider is experiencing outages
+3. **Database Sleep**: Some free-tier databases sleep after inactivity - wake them up first
+4. **Retry**: Sometimes temporary network issues resolve themselves
+
+**Step-by-Step Supabase Troubleshooting**:
+1. Go to your Supabase project dashboard
+2. Navigate to Settings → Database
+3. Copy the connection string under "Connection string"
+4. Replace `[YOUR-PASSWORD]` with your actual database password
+5. If you don't know the password, reset it: Settings → Database → Reset database password
+6. Test the connection string in DataVibe
+
+**Example Working Connection Strings**:
+
+**Supabase**:
+```
+postgresql://postgres:your_actual_password@db.abcdefghijklmnop.supabase.co:5432/postgres
+```
+
+**Neon**:
+```
+postgresql://username:password@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb
+```
+
+**PlanetScale**:
+```
+mysql://username:pscale_pw_XXXXXX@aws.connect.psdb.cloud/database-name?sslaccept=strict
+```
 
 ### Query Issues
 
