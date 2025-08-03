@@ -1,11 +1,13 @@
 [build]
   base = "frontend"
-  publish = "frontend/out"
+  publish = "out"
   command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
   NEXT_PUBLIC_API_URL = "https://datavibe.onrender.com"
+  NEXT_PUBLIC_SUPABASE_URL = "https://jgvrrxmomqgjpsnhjaau.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndnJyeG1vbXFnanBzbmhqYWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNDI5NzAsImV4cCI6MjA2OTcxODk3MH0.jYooXN4MnqiWO0AMch7rsLyV-b0Qvh6OKmDhWp2FqtQ"
 
 [[redirects]]
   from = "/*"
