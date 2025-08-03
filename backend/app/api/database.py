@@ -15,11 +15,8 @@ class DatabaseQueryRequest(BaseModel):
     sql_query: str
 
 @router.post("/test-connection")
-async def test_database_connection(
-    request: ConnectionTestRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user)
-):
-    """Test connection to a remote cloud database"""
+async def test_database_connection(request: ConnectionTestRequest):
+    """Test connection to a remote cloud database (public endpoint)"""
     try:
         result = CloudDatabaseService.test_connection(request.connection_string)
         return result
